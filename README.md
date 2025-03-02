@@ -60,14 +60,24 @@ Sauf qu'en Rust, avec no_std, ça doit être fait manuellement.
 
 Les types d'allocateurs sont des techniques pour allouer de la mémoire selon le besoin:
 - Bump Allocator 
-- Free List Allocator
+- Free List Allocator 
 - Buddy Allocator
 - Slab Allocator
 
 
 L'objectif plus tard est d'utilisé l'allocateur pour l'imprementé a un systeme de fichier FAT32
 
-Voila un tableau qui compare les techniques d'allocation : 
-![Uploading image.png…]()
 
+Pas de Bump Allocateur: pourquoi? = Il alloue en avançant de pointeur en pointeur vers l'avant uniquement. Pour libérer de la mémoire, il faut tout libéré d'un coup et FAT32 à besoin de libérer des structures mémoire précises individuellement. Il n'est pas adapté.
+
+Pas de Free List Allocator : pourquoi? = L'allocation est fait par liste chainée de bloc libres, Son nombre important de fragmentation fait, qu'il faut a chaque fois cherché des bloc libres de la bonne taille,ça demande trop de gestion de tailles fixes d'objets(entrée répertoires, Cluster de FAT, etc..) et se serait trop lent pour le FileSystem
+
+Pas de Buddy Allocator: pourquoi? = L'allocation mémoire est divisé en bloc de puissance de 2 ( exemple: 1MB -> 512KB -> 256KB -> 128KB.... -> 2KB -> 1KB). Si je veux allouer 32 octets un objet, 64 ou 128 octets seront allouer car Buddy fonctionne en puissance de 2 et c'est du gaspillage. Pour FAT32 on a déja une taille d'objets Fixe
+
+Meilleur choix : Slab Allocator 
+pourquoi ? = Il est concu pour les structures de tailles fixe (prépartion de bloc adapté possible)
+             Il évite la fragmentation ( Slab stock que un type d'objet)
+             Il est rapide (pas de recherche de bloc comme fee list, il prend un bloc disponible)
+
+             
 
