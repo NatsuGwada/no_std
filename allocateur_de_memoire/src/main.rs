@@ -21,3 +21,7 @@ fn panic(_info: &PanicInfo) -> !{
 }
 
 
+fn main() {
+
+    
+}
