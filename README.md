@@ -5,7 +5,7 @@ Classe : 4e SI Janvier 2025
 Matière programmation Rust Systeme
 
 
-Consigne: 
+Consigne du CC pour avant le 27 Mars 2025: 
 ● Git repo, add me as contributor
 
 ● The project is in no_std
@@ -32,6 +32,17 @@ appreciated for the allocation library
 be a hard thing to do, so I need to understand what you wanted
 to do in the first place
 
+
+Consigne pour l'examen Final : 
+●
+If you have time (it’s adviced to do so)
+–In the second exam you’ll have to implement a FAT32 filesystem
+–You can start implementing a no_std compatible FAT32 parser
+–Won’t be taken in account for THIS exam, but will help you go faster
+for part II
+
+
+On va devoir utilisé notre allocateur de mémoire coder, pour notre examen final.
 ------------------------------------------------------------------------------------
 
 1ere Etape: Comment fonctionne un allocateur de mémoire.
@@ -44,6 +55,9 @@ Lorsqu'un programme a besoin de mémoire, voila ce qui se passe:
 - Le programme utilise cette espace pour stocket ses données
 - En fonction des cas, l'allocateur peut libéré cette dé-allouer l'esace quand il n'est plus utilisé.
 
+Sauf qu'en Rust, avec no_std, ça doit être fait manuellement.
+
+
 Les types d'allocateurs sont des techniques pour allouer de la mémoire selon le besoin:
 - Bump Allocator 
 - Free List Allocator
@@ -53,6 +67,5 @@ Les types d'allocateurs sont des techniques pour allouer de la mémoire selon le
 
 
 
-Sauf qu'en Rust, avec no_std, ça doit être fait manuellement.
 
 
