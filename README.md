@@ -31,3 +31,7 @@ appreciated for the allocation library
 ● A report with your design choice is needed, slab allocators can
 be a hard thing to do, so I need to understand what you wanted
 to do in the first place
+
+------------------------------------------------------------------------------------
+
+1ere Etape: Comment fonctionne un allocateur de mémoire.
