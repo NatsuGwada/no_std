@@ -44,6 +44,14 @@ Lorsqu'un programme a besoin de mémoire, voila ce qui se passe:
 - Le programme utilise cette espace pour stocket ses données
 - En fonction des cas, l'allocateur peut libéré cette dé-allouer l'esace quand il n'est plus utilisé.
 
+Les types d'allocateurs sont des techniques pour allouer de la mémoire selon le besoin:
+- Bump Allocator 
+- Free List Allocator
+- Buddy Allocator
+- Slab Allocator
+
+
+
 
 Sauf qu'en Rust, avec no_std, ça doit être fait manuellement.
 
