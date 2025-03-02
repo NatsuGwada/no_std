@@ -65,7 +65,9 @@ Les types d'allocateurs sont des techniques pour allouer de la mémoire selon le
 - Slab Allocator
 
 
+L'objectif plus tard est d'utilisé l'allocateur pour l'imprementé a un systeme de fichier FAT32
 
-
+Voila un tableau qui compare les techniques d'allocation : 
+![Uploading image.png…]()
 
 
