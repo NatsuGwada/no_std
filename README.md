@@ -1,7 +1,7 @@
 Prénom: Sanndy
 Nom : MANIJEAN
 Classe : 4e SI Janvier 2025
-
+'
 Matière programmation Rust Systeme
 
 
@@ -35,3 +35,16 @@ to do in the first place
 ------------------------------------------------------------------------------------
 
 1ere Etape: Comment fonctionne un allocateur de mémoire.
+Un allocateur de mémoire, c'est un système avec des algorithmes vont réserver de la mémoire dynamiquement pour un programme informatique.
+
+Lorsqu'un programme a besoin de mémoire, voila ce qui se passe:
+- Le programme demande à l'allocateur de lui alloué de l'espace en ram
+- L'allocateur trouve l'espace libre
+- L'allocateur réserve l'espace et renvoie un pointeur au programme, vers cette espace
+- Le programme utilise cette espace pour stocket ses données
+- En fonction des cas, l'allocateur peut libéré cette dé-allouer l'esace quand il n'est plus utilisé.
+
+
+Sauf qu'en Rust, avec no_std, ça doit être fait manuellement.
+
+
