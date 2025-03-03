@@ -79,5 +79,6 @@ pourquoi ? = Il est concu pour les structures de tailles fixe (prépartion de bl
              Il évite la fragmentation ( Slab stock que un type d'objet)
              Il est rapide (pas de recherche de bloc comme fee list, il prend un bloc disponible)
 
-             
 
+
+J'ai choisi de coder sur une VM par sécurité. On va manipuler de la mémoire, pour éviter toutes casse local. C'est mieux.
