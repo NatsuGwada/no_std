@@ -3,25 +3,26 @@
 
 // Structure qui contient les information sur la panic du kernel
 use core::panic::PanicInfo;
+use core::alloc::{GlobalAlloc, Layout};
+use core::ptr;
 
-
-#[panic_handler]   // Directive donné à  rust pour utilisé  la fonction lorsqu'un panic se produit
 // Fonction qui va ignorer les informations de panic du kernel
 fn panic(_info: &PanicInfo) -> !{
 
-    if let Some(location) = _info.location() {
-        let file = location.file();
-        let line = location.line();
-
-    }
-    
     loop{}
-
-
 }
 
 
-fn main() {
+// structure pour l'allocateur slab
+pub struct SlabAllocator {
 
-    
+    // mémoire utilisé pour l'allocation
+    memory_start: usize,
+    memory_size: usize,
+
+    // pointeur vers la prochaine zone mémoire libre
+    next_free: usize,
+
 }
+
+// 
