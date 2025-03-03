@@ -81,4 +81,7 @@ pourquoi ? = Il est concu pour les structures de tailles fixe (prépartion de bl
 
 
 
-J'ai choisi de coder sur une VM par sécurité. On va manipuler de la mémoire, pour éviter toutes casse local. C'est mieux.
+J'ai choisi de coder sur une VM par sécurité. On va manipuler de la mémoire, pour éviter toutes casse local (corruption de mémoire). C'est mieux.
+
+
+
