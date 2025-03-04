@@ -3,5 +3,13 @@ name = "allocateur_de_memoire"
 version = "0.1.0"
 edition = "2021"
 
+[lib]
+name = "slab_allocator"
+path = "src/lib.rs"
+
 [dependencies]
 # pas de std
+
+[features]
+default = []
+alloc = [] # pour activer l'allocateur global
