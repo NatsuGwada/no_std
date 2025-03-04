@@ -49,6 +49,22 @@ unsafe  impl GlobalAlloc for SlabAllocator {
         if remainder != 0 {
             current += align - remainder
         }
+
+        // Vérification qu'on à asser d'espace en mémoire
+        if current + size > self.memory_start + self.memory_size {
+            return ptr::null_mut();
+        }
+
+        // Return un pointeur vers la mémoire allouée
+        current as *mut u8
     }    
+
+    unsafe fn dealloc(&self, _ptr: *mut u8, _layout: Layout) {
+        
+    }
 }
+
+// pour que l'allocateur soit utilisable par le systeme
+#[global_allocator]
+static ALLOCATOR: SlabAllocator = SlabAllocator::new(0x10000, 0x10000);
 
