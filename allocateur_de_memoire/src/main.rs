@@ -37,3 +37,18 @@ impl SlabAllocator{
 }
 
 // Imprémentation du trait GlobalAlloc
+unsafe  impl GlobalAlloc for SlabAllocator {
+    unsafe fn alloc(&self, layout: Layout) -> mut u8{
+        // vérification de si on à asser de mémoire
+        let size = layout.size();
+        let aling = layout.align();
+
+        //alignement de la mémoire
+        let mut current = self.next_free;
+        let remainder = current % align;
+        if remainder != 0 {
+            current += align - remainder
+        }
+    }    
+}
+
