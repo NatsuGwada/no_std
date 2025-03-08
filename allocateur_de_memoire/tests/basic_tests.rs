@@ -47,8 +47,61 @@ fn test_small_alloc() {
 
 #[test_case]
 fn test_multiple_allocs() {
-    // Même principe mais avec plusieurs allocations
-    // ...
+    let memory_start = unsafe { TEST_MEMORY.as_ptr() as usize };
+    let mut allocator = unsafe {
+        let mut alloc = slab_allocator::SlabAllocator::new(memory_start, 4096);
+        alloc.init();
+        alloc
+    };
+
+    // Allouer plusieurs blocs de différentes tailles
+    let layouts = [
+        Layout::from_size_align(8, 8).unwrap(),
+        Layout::from_size_align(16, 8).unwrap(),
+        Layout::from_size_align(32, 8).unwrap(),
+        Layout::from_size_align(64, 8).unwrap(),
+    ];
+
+    let mut ptrs = [ptr::null_mut(); 4];
+    
+    // Allouer et écrire dans chaque bloc
+    for (i, &layout) in layouts.iter().enumerate() {
+        ptrs[i] = unsafe { allocator.alloc(layout) };
+        assert!(!ptrs[i].is_null(), "L'allocation #{} a échoué", i);
+        
+        // Écrire des données dans le bloc
+        unsafe {
+            for j in 0..layout.size() {
+                *ptrs[i].add(j) = (j % 255) as u8;
+            }
+        }
+    }
+    
+    // Vérifier que les données sont intactes
+    for (i, &layout) in layouts.iter().enumerate() {
+        unsafe {
+            for j in 0..layout.size() {
+                assert_eq!(*ptrs[i].add(j), (j % 255) as u8, 
+                    "Données corrompues dans l'allocation #{}", i);
+            }
+        }
+    }
+    
+    // Libérer tous les blocs
+    for (i, &layout) in layouts.iter().enumerate() {
+        unsafe {
+            allocator.dealloc(ptrs[i], layout);
+        }
+    }
+    
+    // Vérifier qu'on peut réallouer après avoir tout libéré
+    for (i, &layout) in layouts.iter().enumerate() {
+        let ptr = unsafe { allocator.alloc(layout) };
+        assert!(!ptr.is_null(), "La réallocation #{} a échoué", i);
+        unsafe {
+            allocator.dealloc(ptr, layout);
+        }
+    }
 }
 
 pub fn test_runner(tests: &[&dyn Fn()]) {
