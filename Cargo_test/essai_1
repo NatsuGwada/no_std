@@ -1,0 +1,56 @@
+cargo test --test basic_tests
+
+   Compiling allocateur_de_memoire v0.1.0 (/home/sm/Documents/test_code/allocateur_de_memoire)
+error[E0658]: use of unstable library feature `alloc_error_handler`
+   --> src/lib.rs:165:3
+    |
+165 | #[alloc_error_handler]
+    |   ^^^^^^^^^^^^^^^^^^^
+    |
+    = note: see issue #51540 <https://github.com/rust-lang/rust/issues/51540> for more information
+
+warning: unused variable: `size`
+  --> src/lib.rs:55:18
+   |
+55 |         for (i, &size) in SLAB_SIZES.iter().enumerate() {
+   |                  ^^^^ help: if this is intentional, prefix it with an underscore: `_size`
+   |
+   = note: `#[warn(unused_variables)]` on by default
+
+error[E0596]: cannot borrow `*this` as mutable, as it is behind a `&` reference
+   --> src/lib.rs:120:20
+    |
+120 |                 if this.allocate_more_slabs(slab_index).is_err() {
+    |                    ^^^^ `this` is a `&` reference, so the data it refers to cannot be borrowed as mutable
+    |
+help: consider changing this to be a mutable reference
+    |
+113 |         let this = &mut *(self as *const _ as *mut SlabAllocator);
+    |                     +++
+
+error[E0594]: cannot assign to `this.free_lists[_]`, which is behind a `&` reference
+   --> src/lib.rs:127:13
+    |
+127 |             this.free_lists[slab_index] = (*block).next;
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `this` is a `&` reference, so the data it refers to cannot be written
+    |
+help: consider changing this to be a mutable reference
+    |
+113 |         let this = &mut *(self as *const _ as *mut SlabAllocator);
+    |                     +++
+
+error[E0594]: cannot assign to `this.free_lists[_]`, which is behind a `&` reference
+   --> src/lib.rs:145:13
+    |
+145 |             this.free_lists[slab_index] = block;
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `this` is a `&` reference, so the data it refers to cannot be written
+    |
+help: consider changing this to be a mutable reference
+    |
+138 |         let this = &mut *(self as *const _ as *mut SlabAllocator);
+    |                     +++
+
+Some errors have detailed explanations: E0594, E0596, E0658.
+For more information about an error, try `rustc --explain E0594`.
+warning: `allocateur_de_memoire` (lib) generated 1 warning
+error: could not compile `allocateur_de_memoire` (lib) due to 4 previous errors; 1 warning emitted
