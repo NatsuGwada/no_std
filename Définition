@@ -1,0 +1,12 @@
+                           EN Rust
+
+un trait: Un trait n'est pas une fonction, mais une interface qui définit un ensemble de fonctions que les types peuvent implémenter.
+
+Un Type: Un type définit ce qu'une variable peut contenir et comment elle peut être utilisée.
+
+Slab Allocator: 
+- Un Slab Allocator divise la mémoire en "slabs" (blocs fixes) contenant des objets de même taille.
+- Il est utilisé pour gérer efficacement des objets courts-vivants (ex: processus, inodes, caches).
+- Il évite la fragmentation mémoire et accélère les allocations/désallocations.
+- En Rust (no_std), on peut l’implémenter avec un trait Allocator et une liste d’objets réutilisables.
+
