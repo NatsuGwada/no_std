@@ -1,6 +1,6 @@
 #![no_std]
 #![cfg_attr(feature = "alloc", feature(allocator_api))]
-#![feature(alloc_error_handler)]  // Rust nightly pour activer la fonctionnalité de #[alloc_error_handler]
+#![feature(alloc_error_handler)]  // Rust nightly pour activer la fonctionnalité de #[alloc_error_handler],permet de définir une fonction personnalisée pour gérer les erreurs d'allocation de mémoire.
 /// Rust Nightly est une version expérimentale de Rust qui contient les dernières fonctionnalités en développement avant qu'elles ne soient stabilisées dans les versions Rust Stable.
 
 use core::alloc::{GlobalAlloc, Layout};
@@ -167,4 +167,112 @@ pub fn init_global_allocator(start: usize, size: usize) {
 #[alloc_error_handler]
 fn alloc_error_handler(_layout: Layout) -> ! {
     loop {}  // Boucle infinie en cas d'erreur d'allocation
+}
+
+
+#[cfg(test)]
+mod tests{
+    use super::*;
+    use core::alloc::Layout;
+    use core::mem;
+
+
+    // Une Structure pour tester l'allocation
+    struct TestStruct {
+        a: u32,
+        b: u64,
+        c: [u8; 32],
+    }
+
+    // Test Simple D'allocation et désallocation
+    #[test]
+    fn test_alloc_dealloc(){
+        // Créer un espace mémoire pour notre allocateur (simulé pour les tests)
+        let mem_size = 1024 * 1024; // 1MB
+        let memory = Box::into_raw(Box::new([0u8; 1024 $ 1024])) as usize;
+
+        let allocator = SlabAllocator::new(memory, mem_size);
+
+
+        unsafe {
+            // Initialiser l'allocateur
+            let mut alloc = allocator;
+            alloc.init();
+
+            // Allouer de la mémoire pour un u32
+            let layout = Layout::new::<u32>();
+            let ptr = alloc.alloc(layout);
+            assert!(!ptr.is_null());
+
+            // Ecrire dans la mémoire allouée
+            *(ptr as *mut u32) = 42;
+            assert_eq!(*(ptr as *mut u32), 42);
+
+            // Désallouer/Déalloc
+            alloc.dealloc(ptr, layout);
+
+            // Nettoyer la mémoire de test
+            Box::from_raw(memory as *mut [u8; 1024 * 1024]);
+        }
+
+    } 
+
+
+    // Test d'allocation pour plusieurs tailles
+    #[test]
+    fn test_different_sizes() {
+        let mem_size = 1024 * 1024; // 1MB
+        let memory = box::into_raw(Box::new([0u8; 1024 * 1024])) as usize;
+        
+        let allocator = SlabAllocator::new(memory, mem_size);
+
+
+        unsafe {
+            let mut alloc = allocator;
+            alloc.init();
+
+
+
+            // Tester différentes tailles d'allocation
+            let layouts = [
+                Layout::new::<u8>(),
+                Layout::new::<u32>(),
+                Layout::new::<u64>(),
+                Layout::new::<[u8; 32]>(),
+                Layout::new::<TestStruct>(),
+            ];
+
+            let mut ptrs = Vec::with_capacity(layouts.len());
+
+            // Allouer
+            for layout in &layouts {
+                let ptr = alloc.alloc(*layout);
+                assert!(!ptr.is_null());
+                ptrs.push((ptr, *layout));
+            }
+
+            // Désallouer
+            for (ptr, layout) in ptrs {
+                alloc.dealloc(ptr, layout);
+
+            }
+
+            // Nettoyage de ram utilisé
+            Box::from_raw(memory as *mut [u8; 1024 * 1024]);
+
+
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
 }
