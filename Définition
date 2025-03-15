@@ -4,6 +4,11 @@ un trait: Un trait n'est pas une fonction, mais une interface qui définit un en
 
 Un Type: Un type définit ce qu'une variable peut contenir et comment elle peut être utilisée.
 
+#[global_allocator] : C'est un attribut en Rust qui permet de définir un allocateur de mémoire global. Soit, une fonctionnalité intégrée à Rust pour personnaliser l’allocation mémoire.
+Ce n'est ni un outils, ni une librarie.
+Il sert à choisir ou créer un allocateur mémoire personnalisé.
+Très utile pour les OS/Kernelen Rust, les optimisations de performance, et les environnements no_std
+
 Slab Allocator: 
 - Un Slab Allocator divise la mémoire en "slabs" (blocs fixes) contenant des objets de même taille.
 - Il est utilisé pour gérer efficacement des objets courts-vivants (ex: processus, inodes, caches).
@@ -60,6 +65,10 @@ Vecteurs (Vec):
 Un Vec<T> est comme une liste dynamique.
 exemple: let v = vec![1, 2, 3];
 
+Array: 
+Un liste statique, ou vecteur statique si on veux
+
+Global_allocator:
 
 
 Résumé : 
