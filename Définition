@@ -10,3 +10,67 @@ Slab Allocator:
 - Il évite la fragmentation mémoire et accélère les allocations/désallocations.
 - En Rust (no_std), on peut l’implémenter avec un trait Allocator et une liste d’objets réutilisables.
 
+tableau des typages: 
+Type	Description	                                     Exemple
+u8	  Entier non signé (0 à 255)	                     let x: u8 = 255;
+u16	  Entier non signé (0 à 65 535)	                   let x: u16 = 500;
+u32	  Entier non signé (0 à 4 milliards)	             let x: u32 = 1_000_000;
+u64	  Entier non signé (très grand nombre)	           let x: u64 = 10_000_000_000;
+i8	  Entier signé (-128 à 127)	let x: i8 = -100;      let x: i8 = -100;
+i16	  Entier signé (-32k à 32k)	let x: i16 = -2000;    let x: i16 = -2000;
+i32	  Entier signé (-2 milliards à 2 milliards)	       let x: i32 = -1_000_000;
+i64	  Entier signé (très grand nombre)	               let x: i64 = -10_000_000_000;
+
+let & let mut: 
+let pour déclarer des variables. Pour odifier la variable, ajoute mut après let
+
+fonction:
+Définir une fonction avec fn 
+fn{]
+
+structure:
+Une struct permet de créer un type personnalisé (comme une classe en Python)
+
+Impl:
+permet d'ajouter des fonctions à une struct avec impl
+
+use:
+Sert à importer des modules d'une librairy en  rust
+
+unsafe: 
+Rust interdit certaines actions dangereuses (ex: pointeurs bruts).
+Mais unsafe permet de les faire quand même.
+unsafe c'est pour contourner la sécurité de Rust
+
+Les boucles: 
+Boucles (loop, while, for)
+
+Gestion des erreurs (Result et Option):
+Rust ne crashe pas en cas d’erreur, il utilise Result.
+Exemple:
+fn main() {
+    match division(10, 0) {
+        Ok(resultat) => println!("Résultat : {}", resultat),
+        Err(erreur) => println!("Erreur : {}", erreur),
+    }
+}
+
+
+Vecteurs (Vec):
+Un Vec<T> est comme une liste dynamique.
+exemple: let v = vec![1, 2, 3];
+
+
+
+Résumé : 
+Syntaxe	Explication	Exemple
+let x: u32 = 10;	Déclaration de variable	let age: u8 = 25;
+mut	Rend une variable modifiable	let mut x = 5; x += 1;
+fn nom() -> T {}	Fonction	fn addition(a: i32, b: i32) -> i32 { a + b }
+struct	Définition d’une structure	struct Personne { nom: String, age: u8 }
+impl	Ajouter des méthodes à une struct	impl Rectangle { fn aire(&self) -> u32 { self.largeur * self.hauteur } }
+use	Importer un module	use std::fs::File;
+unsafe	Contourner la sécurité Rust	unsafe { *ptr = 10; }
+loop, while, for	Boucles	for i in 0..5 {}
+Result<T, E>	Gestion des erreurs	fn div(a, b) -> Result<i32, String>
+Vec<T>	Liste dynamique	let v = vec![1, 2, 3];
