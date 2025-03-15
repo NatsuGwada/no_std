@@ -264,15 +264,42 @@ mod tests{
         }
     }
 
+    // Test de réutilisation des blocs
+    #[test]
+    fn test_reuse_blocks() {
+        let mem_size = 1024 * 1024; // 1MB
+        let memory = Box::into_raw(Box::new([0u8; 1024 * 1024])) as usize;
+
+        let alloator = SlabAllocator::new(memory, mem_size);
+        
+        
+        unsafe {
+            let mut alloc = alloator;
+            alloc.init();
+
+            let layout = Layout::new::<u32>();
+
+            // première allocation
+            let ptr1 = alloc.alloc(layout);
+            assert!(!ptr1.is_null());
 
 
+            // Désallocation
+            alloc.dealloc(ptr1, layout);
 
 
+            // Deuxieme allocation - ça doit réutilisé le meme bloc
+            let ptr2 = alloc.alloc(layout);
+            assert!(!ptr2.is_null());
 
 
+            // Les pointeurs doivent être identiques(réutilisation)
+            assert_eq!(ptr1, ptr2);
 
+            // Nettoyer
+            alloc.dealloc(ptr2, layout);
+            Box::from_raw(memory as *mut [u8; 1024 * 1024]);
 
-
-
-
+        }
+    }
 }
