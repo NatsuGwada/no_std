@@ -13,3 +13,9 @@ path = "src/lib.rs"
 [features]
 default = []
 alloc = [] # pour activer l'allocateur global
+
+[build]
+target = "x86_64-unknown-none"
+
+[target.'cfg(target_os = "none")']
+runner = "qemu-system-x86_64 -drive format=raw,file=target/x86_64-unknown-none/debug/bootimage-allocateur_de_memoire.bin -serial mon:stdio -display none"
