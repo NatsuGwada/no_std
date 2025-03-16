@@ -1,5 +1,5 @@
-#![no_std]
-#![cfg_attr(feature = "alloc", feature(allocator_api))]
+#![no_std]  // pas d'utilisation de la bibliothèque 
+#![cfg_attr(feature = "alloc", feature(allocator_api))]  
 #![feature(alloc_error_handler)]  // Rust nightly pour activer la fonctionnalité de #[alloc_error_handler],permet de définir une fonction personnalisée pour gérer les erreurs d'allocation de mémoire.
 /// Rust Nightly est une version expérimentale de Rust qui contient les dernières fonctionnalités en développement avant qu'elles ne soient stabilisées dans les versions Rust Stable.
 
@@ -74,9 +74,16 @@ impl SlabAllocator {
         None // Aucune taille de slab appropriée
     }
     
-    // Cette fonction est unsafe car elle manipule directement des pointeurs
-// et accède à la mémoire sans vérification.
-    /// Alloue un nouveau bloc de mémoire pour une taille spécifique
+    /// Cette fonction est unsafe car elle manipule directement des pointeurs
+    /// et accède à la mémoire sans vérification.
+    ///
+    /// # Safety
+    ///
+    /// Le code appelant doit garantir que:
+    /// - L'entrée `slab_index` est valide et dans les limites de `SLAB_SIZES`
+    /// - La région mémoire spécifiée par `memory_start` et `memory_end` est valide
+    /// - Cette fonction ne doit pas être appelée concurremment avec d'autres opérations sur l'allocateur
+
     unsafe fn allocate_more_slabs(&mut self, slab_index: usize) -> Result<(), ()> {
         let slab_size = SLAB_SIZES[slab_index];
         
@@ -169,6 +176,7 @@ fn alloc_error_handler(_layout: Layout) -> ! {
     loop {}  // Boucle infinie en cas d'erreur d'allocation
 }
 
+/// les tests
 
 #[cfg(test)]
 mod tests{
