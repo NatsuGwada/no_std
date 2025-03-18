@@ -1,5 +1,8 @@
-#![no_std]  // pas d'utilisation de la bibliothèque 
+#![no_std]  // Pas d'utilisation de la bibliothèque standard
 
+
+
+// import des modules nécéssaires
 use core::alloc::{GlobalAlloc, Layout};
 use core::ptr;
 use core::mem;
@@ -18,6 +21,8 @@ const SLAB_SIZES: [usize; 4] = [16, 32, 64, 128]; // Différentes tailles de sla
 struct SlabBlock {
     next: *mut SlabBlock, // Pointeur vers le prochain bloc libre
 }
+
+
 
 /// Notre allocateur de type Slab
 pub struct SlabAllocator {
@@ -69,7 +74,8 @@ impl SlabAllocator {
     
     /// Trouve l'index de la taille de slab appropriée
     unsafe fn find_slab_index(&self, layout: &Layout) -> Option<usize> {
-        let inner = &*self.inner.get();
+        // let inner = &*self.inner.get();
+        
         let required_size = layout.size().max(mem::size_of::<SlabBlock>());
         
         for (i, &size) in SLAB_SIZES.iter().enumerate() {
@@ -99,7 +105,6 @@ impl SlabAllocator {
         let required_memory = slab_size * slabs_to_create;
         
         // Trouver une zone libre dans notre mémoire
-        // (Implémentation très basique pour l'exemple)
         let current_alloc = inner.memory_start + inner.allocated_counts.iter().enumerate()
             .map(|(i, &count)| count * SLAB_SIZES[i])
             .sum::<usize>();
@@ -110,8 +115,12 @@ impl SlabAllocator {
         
         // Créer les nouveaux slabs et les ajouter à la liste libre
         for i in 0..slabs_to_create {
+            // Assurer que l'adresse du bloc est correctement alignée
             let block_addr = current_alloc + i * slab_size;
-            let block_ptr = block_addr as *mut SlabBlock;
+            let alignment = mem::align_of::<SlabBlock>();
+            let aligned_addr = (block_addr + alignment - 1) & !(alignment - 1);
+            
+            let block_ptr = aligned_addr as *mut SlabBlock;
             
             // Ajouter à la liste libre
             (*block_ptr).next = inner.free_lists[slab_index];
@@ -143,7 +152,17 @@ unsafe impl GlobalAlloc for SlabAllocator {
             let block = inner.free_lists[slab_index];
             inner.free_lists[slab_index] = (*block).next;
             
-            return block as *mut u8;
+            // Vérifier l'alignement
+            let ptr = block as *mut u8;
+            if (ptr as usize) % layout.align() != 0 {
+                // Le pointeur n'est pas aligné correctement, on le désalloue
+                // et on retourne une erreur
+                (*block).next = inner.free_lists[slab_index];
+                inner.free_lists[slab_index] = block;
+                return ptr::null_mut();
+            }
+            
+            return ptr;
         }
         
         // Aucune taille de slab appropriée
