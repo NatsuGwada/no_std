@@ -8,10 +8,10 @@ name = "slab_allocator"
 path = "src/lib.rs"
 
 [dependencies]
-# Pour les tests standard
-std = { package = "std", version = "1.0.0", optional = true }
 
 [features]
 default = []
 alloc = [] # pour activer l'allocateur global
-test = ["std"]  # Pour activer les tests avec std
+
+[profile.test]
+panic = "abort"
