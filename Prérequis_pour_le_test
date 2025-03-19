@@ -9,3 +9,5 @@ sudo apt install qemu-system-x86
 installation d'outils nécéssaires:
 rustup target add x86_64-unknown-none
 cargo install bootimage
+
+Exécuté les test depuis le allocator_tests.rs : cargo +nightly test --test allocator_tests -Zpanic-abort-tests
