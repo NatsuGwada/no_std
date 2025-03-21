@@ -237,15 +237,16 @@ unsafe impl GlobalAlloc for GlobalSlabAllocator {
     }
 }
 
-// Définir un allocateur global si la feature 'alloc' est activée
-#[cfg(feature = "alloc")]
-#[global_allocator]
-static GLOBAL_ALLOCATOR: GlobalSlabAllocator = GlobalSlabAllocator::new();
 
 // Initialisation de l'allocateur global avec une région de mémoire
 #[cfg(feature = "alloc")]
-pub fn init_global_allocator(start: usize, size: usize) {
-    GLOBAL_ALLOCATOR.init(start, size);
+#[test_case]
+fn init_global_alloc_for_tests() {
+    static mut TEST_MEMORY: [u8; 1024 * 1024] = [0; 1024 * 1024];
+    unsafe {
+        let memory_ptr = TEST_MEMORY.as_ptr() as usize;
+        init_global_allocator(memory_ptr, TEST_MEMORY.len());
+    }
 }
 
 /// les tests
