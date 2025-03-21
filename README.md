@@ -81,7 +81,11 @@ pourquoi ? = Il est concu pour les structures de tailles fixe (prépartion de bl
 
 
 
-J'ai choisi de coder sur une VM par sécurité. On va manipuler de la mémoire, pour éviter toutes casse local (corruption de mémoire). C'est mieux.
+J'ai choisi de coder sur une VM par sécurité. On va manipuler de la mémoire, pour éviter toutes casse local (corruption de mémoire). C'est mieux. Mais au final c'etait chiant car mon copie paste ne passais pas souvent ce qui oblige a faire autrement mais c'est plus long, donc je suis repasser en local pour mes test.
+
+Le Slab_Allocator est compatible avec un environnement no_std,doncsans accès à la bibliothèque standard de rust.
+ça met un context bas niveau ( cool pour du embarqué ou des noyaux car c'est ce qui est demander)
+un noyaux(kernel) n'a pas accès a la bibliothèque standard, donc on va utilise le module "code::" aulieu de "std::)
 
 
 
