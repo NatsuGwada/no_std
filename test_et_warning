@@ -1,0 +1,115 @@
+cargo test
+warning: `panic` setting is ignored for `test` profile
+   Compiling allocateur_de_memoire v0.1.0 (/home/administrateur/Documents/Cours_4eSI_Janvier/Rust_Systeme_reseau_programming/allocateur_de_memoire)
+warning: creating a shared reference to mutable static is discouraged
+  --> tests/allocator_tests.rs:16:26
+   |
+16 |         let memory_ptr = TEST_MEMORY.as_ptr() as usize;
+   |                          ^^^^^^^^^^^^^^^^^^^^ shared reference to mutable static
+   |
+   = note: for more information, see <https://doc.rust-lang.org/nightly/edition-guide/rust-2024/static-mut-references.html>
+   = note: shared references to mutable statics are dangerous; it's undefined behavior if the static is mutated or if a mutable reference is created for it while the shared reference lives
+   = note: `#[warn(static_mut_refs)]` on by default
+
+warning: creating a shared reference to mutable static is discouraged
+  --> tests/allocator_tests.rs:17:56
+   |
+17 |         let allocator = SlabAllocator::new(memory_ptr, TEST_MEMORY.len());
+   |                                                        ^^^^^^^^^^^^^^^^^ shared reference to mutable static
+   |
+   = note: for more information, see <https://doc.rust-lang.org/nightly/edition-guide/rust-2024/static-mut-references.html>
+   = note: shared references to mutable statics are dangerous; it's undefined behavior if the static is mutated or if a mutable reference is created for it while the shared reference lives
+
+warning: fields `a`, `b`, and `c` are never read
+   --> src/lib.rs:261:9
+    |
+260 |     struct TestStruct {
+    |            ---------- fields in this struct
+261 |         a: u32,
+    |         ^
+262 |         b: u64,
+    |         ^
+263 |         c: [u8; 32],
+    |         ^
+    |
+    = note: `#[warn(dead_code)]` on by default
+
+warning: creating a shared reference to mutable static is discouraged
+   --> src/lib.rs:272:30
+    |
+272 |             let memory_ptr = TEST_MEMORY.as_ptr() as usize;
+    |                              ^^^^^^^^^^^^^^^^^^^^ shared reference to mutable static
+    |
+    = note: for more information, see <https://doc.rust-lang.org/nightly/edition-guide/rust-2024/static-mut-references.html>
+    = note: shared references to mutable statics are dangerous; it's undefined behavior if the static is mutated or if a mutable reference is created for it while the shared reference lives
+    = note: `#[warn(static_mut_refs)]` on by default
+
+warning: creating a shared reference to mutable static is discouraged
+   --> src/lib.rs:273:60
+    |
+273 | ...y_ptr, TEST_MEMORY.len());
+    |           ^^^^^^^^^^^^^^^^^ shared reference to mutable static
+    |
+    = note: for more information, see <https://doc.rust-lang.org/nightly/edition-guide/rust-2024/static-mut-references.html>
+    = note: shared references to mutable statics are dangerous; it's undefined behavior if the static is mutated or if a mutable reference is created for it while the shared reference lives
+
+warning: creating a shared reference to mutable static is discouraged
+   --> src/lib.rs:296:30
+    |
+296 |             let memory_ptr = TEST_MEMORY.as_ptr() as usize;
+    |                              ^^^^^^^^^^^^^^^^^^^^ shared reference to mutable static
+    |
+    = note: for more information, see <https://doc.rust-lang.org/nightly/edition-guide/rust-2024/static-mut-references.html>
+    = note: shared references to mutable statics are dangerous; it's undefined behavior if the static is mutated or if a mutable reference is created for it while the shared reference lives
+
+warning: creating a shared reference to mutable static is discouraged
+   --> src/lib.rs:297:60
+    |
+297 | ...y_ptr, TEST_MEMORY.len());
+    |           ^^^^^^^^^^^^^^^^^ shared reference to mutable static
+    |
+    = note: for more information, see <https://doc.rust-lang.org/nightly/edition-guide/rust-2024/static-mut-references.html>
+    = note: shared references to mutable statics are dangerous; it's undefined behavior if the static is mutated or if a mutable reference is created for it while the shared reference lives
+
+warning: creating a shared reference to mutable static is discouraged
+   --> src/lib.rs:334:30
+    |
+334 |             let memory_ptr = TEST_MEMORY.as_ptr() as usize;
+    |                              ^^^^^^^^^^^^^^^^^^^^ shared reference to mutable static
+    |
+    = note: for more information, see <https://doc.rust-lang.org/nightly/edition-guide/rust-2024/static-mut-references.html>
+    = note: shared references to mutable statics are dangerous; it's undefined behavior if the static is mutated or if a mutable reference is created for it while the shared reference lives
+
+warning: creating a shared reference to mutable static is discouraged
+   --> src/lib.rs:335:60
+    |
+335 | ...y_ptr, TEST_MEMORY.len());
+    |           ^^^^^^^^^^^^^^^^^ shared reference to mutable static
+    |
+    = note: for more information, see <https://doc.rust-lang.org/nightly/edition-guide/rust-2024/static-mut-references.html>
+    = note: shared references to mutable statics are dangerous; it's undefined behavior if the static is mutated or if a mutable reference is created for it while the shared reference lives
+
+warning: `allocateur_de_memoire` (test "allocator_tests") generated 2 warnings
+warning: `allocateur_de_memoire` (lib test) generated 7 warnings
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.17s
+     Running unittests src/lib.rs (target/debug/deps/slab_allocator-3a2e029445c13254)
+
+running 3 tests
+test tests::test_alloc_dealloc ... ok
+test tests::test_different_sizes ... ok
+test tests::test_reuse_blocks ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/allocator_tests.rs (target/debug/deps/allocator_tests-97deca6107075a18)
+
+running 1 test
+test test_alloc_dealloc ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests slab_allocator
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s

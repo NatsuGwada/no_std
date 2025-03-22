@@ -1,0 +1,13 @@
+Le code est fait pour visé des noyau linux ou des systemes embarqués.
+
+Pour le tester, j'installe des dépendances sur un VM debian 12.7 avec  GUI et une configuration basique
+
+QEMU est idéal pour ce type de test car il peut simuler du matériel nu/kernel.
+# Sur Debian/Ubuntu
+sudo apt install qemu-system-x86
+
+installation d'outils nécéssaires:
+rustup target add x86_64-unknown-none
+cargo install bootimage
+
+Exécuté les test depuis le allocator_tests.rs : cargo +nightly test --test allocator_tests -Zpanic-abort-tests
