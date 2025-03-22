@@ -149,7 +149,7 @@ Les tests utilisent `unsafe` comme dans le vrai code, mais sont bien encadrés.
 Les copier coller les resultats des test dans le fichier  test_et_warning il y a des warning mais c'est normal en no_std
 
 
-## Tests d'intégration (`alloc_test.rs`)
+## Tests d'intégration (`allocator_test.rs`)
 
 J'ai placé un fichier `allocator_test.rs` dans le dossier `tests/` pour tester l'allocateur comme s'il était utilisé dans un projet externe.  
 Ce fichier est un test d’intégration.
