@@ -1,22 +1,23 @@
-#![no_std]  // Pas d'utilisation de la bibliothèque standard
+#![no_std]  /// Pas d'utilisation de la bibliothèque standard
 
 
 
-// import des modules nécéssaires
-use core::alloc::{GlobalAlloc, Layout};
-use core::ptr;
-use core::mem;
-use core::cell::UnsafeCell;
+/// import des modules nécéssaires
+/// utiliser code car on est en bas niveau et qu'on a pas std
+use core::alloc::{GlobalAlloc, Layout}; /// trait obligatoire pour utilisé l'allocateur , layout c'est l'alignement (la ou tu peux stocker) et la taille du bloc mémoire (combien de mémoire tu veux)
+use core::ptr;  /// ça c'est pour manipuler des pointeurs bas niveau, cool pour chercher des adresses en ram
+use core::mem;  /// pour accéder a la ram et à c'est infos
+use core::cell::UnsafeCell; /// ça c'est pour muer les données internes de l'allocateur, unsafeCelle rend mutable les données static, &self
 
-// J'ai choisi d'utiliser 4 tailles de slabs différentes pour gérer efficacement
-// différentes tailles d'allocations. C'est un compromis entre flexibilité et complexité.
-// Définition de la taille d'un slab 
+/// J'ai choisi d'utiliser 4 tailles de slabs différentes pour ne pas gaspiller la ram.
+/// tu veux alouer 20 octés bin voila un slab de 32 comme ça tu es tranquille
+/// Définition de la taille d'un slab (slab = bloc mémoires en français)
 const SLAB_SIZES: [usize; 4] = [16, 32, 64, 128]; // Différentes tailles de slabs
 
-// Cette structure représente un bloc de mémoire libre.
-// Quand il est libre, on peut utiliser son espace pour stocker un pointeur
-// vers le prochain bloc libre, formant ainsi une liste chaînée.
-/// Un bloc de mémoire dans notre allocateur
+/// Cette structure représente un bloc de mémoire libre.
+/// Quand il est libre, on peut utiliser son espace pour stocker un pointeur
+/// vers le prochain bloc libre, et ça forme ainsi une liste chaînée.
+/// Voila, Un bloc de mémoire dans notre allocateur
 #[repr(C)]
 struct SlabBlock {
     next: *mut SlabBlock, // Pointeur vers le prochain bloc libre
@@ -26,21 +27,22 @@ struct SlabBlock {
 
 /// Notre allocateur de type Slab
 pub struct SlabAllocator {
-    // Utilisation d'UnsafeCell pour permettre une mutabilité intérieure
-    // tout en respectant les règles de Rust concernant les références mutables
+    /// Utilisation d'UnsafeCell pour permettre une mutabilité intérieure
+    /// tout en respectant les règles de Rust concernant les références mutables
     inner: UnsafeCell<SlabAllocatorInner>,
 }
 
 /// Structure interne contenant les données de l'allocateur
 struct SlabAllocatorInner {
-    // La mémoire que notre allocateur va gérer
-    memory_start: usize,
+    /// La mémoire que notre allocateur va gérer, debut et fin (les limites)
+    /// usize = valeurs d'adresse mémoire, en gros un pointeur non signé
+    memory_start: usize,  
     memory_end: usize,
     
-    // Liste de blocs libres pour chaque taille de slab
+    /// Liste\tableu de blocs libres pour chaque taille de slab, SlabBlock = Block mémoire & slabsize sa taille
     free_lists: [*mut SlabBlock; SLAB_SIZES.len()],
     
-    // Nombre de slabs alloués pour chaque taille
+    /// Nombre de slabs alloués pour chaque taille
     allocated_counts: [usize; SLAB_SIZES.len()],
 }
 
@@ -49,13 +51,16 @@ impl SlabAllocator {
     /// 
     /// # Safety
     /// 
-    /// La région de mémoire fournie doit être valide et non utilisée par d'autres 
-    /// parties du programme.
+    /// La région de mémoire fournie doit être valide et non utilisée par d'autres parties du programme.
+    /// une constante car elle va etre evaluer a la compilation pour les test et comme c'est du no_std donc il y a des initialisation a la compilation
     pub const fn new(start: usize, size: usize) -> Self {
         SlabAllocator {
+            // Inner = novuelle instance embalé sans unsafecell
             inner: UnsafeCell::new(SlabAllocatorInner {
+                // Démarrage de l'attribution de taille mémoire
                 memory_start: start,
                 memory_end: start + size,
+                // Plage mémoire défini
                 free_lists: [ptr::null_mut(); SLAB_SIZES.len()],
                 allocated_counts: [0; SLAB_SIZES.len()],
             }),
@@ -63,28 +68,36 @@ impl SlabAllocator {
     }
     
     /// Initialise les listes de blocs libres
+    /// unsafe va modifier l'interieur de UnsafeCell
+    /// &self lis les données de la structure sans les modifiers, en gros de la lecture seule mais avec unsafeCell tu passes en lecture écriture donc tu peux modifier
     pub unsafe fn init(&self) {
+        // self.inner donne un pointeur brut mutable sur &mut SlabAllocatorInner, d'ailleurs il est deviner tout seul par rust (en gros le mot est grisé dans mon vscode)
         let inner = &mut *self.inner.get();
+        // on parcourt les index et les tailles des blocs (16, 32, 64, 128)
         for (i, &_size) in SLAB_SIZES.iter().enumerate() {
-            // Ne pas initialiser maintenant, on le fera à la demande
+            // ça c'est pour vidé la liste de bloc libres
             inner.free_lists[i] = ptr::null_mut();
+            // ça c'est pour remettre a 0 le compteur de bloc alloué pour la taille choisi
             inner.allocated_counts[i] = 0;
         }
     }
     
-    /// Trouve l'index de la taille de slab appropriée
+    /// Trouve l'index de la taille de slab appropriée , en gros ça choisi quelle taile de bloc conviens a la demande d'allocation doonée 
+    /// on reviens a l'exemple d'en haut 20 octer tu veux? ok tien voila 32 octer de dispo pour toi
     unsafe fn find_slab_index(&self, layout: &Layout) -> Option<usize> {
         // let inner = &*self.inner.get();
-        
+        // bon ça , ça calculle la taille minimal nécéssaire
         let required_size = layout.size().max(mem::size_of::<SlabBlock>());
-        
+        // La on parcours les 4 tailles possible, si compatibilité (sois les slab est assser grand ou pas), puis on retourn l'index si c'est bon sinon on renvoie None
+        // l'index c'est la position de la taille dans le tableau [16, 32, 64, 128], 16 = index 0, 32 = index 1, ect..
         for (i, &size) in SLAB_SIZES.iter().enumerate() {
             if size >= required_size && layout.align() <= size {
+                // renvoie de l'index ici
                 return Some(i);
             }
         }
         
-        None // Aucune taille de slab appropriée
+        None // Aucune taille de slab appropriée, normalement il y a que une taille trop grosse par rapport a 128 qui ne passe pas
     }
     
     /// Cette fonction est unsafe car elle manipule directement des pointeurs
@@ -97,7 +110,10 @@ impl SlabAllocator {
     /// - La région mémoire spécifiée par `memory_start` et `memory_end` est valide
     /// - Cette fonction ne doit pas être appelée concurremment avec d'autres opérations sur l'allocateur
     unsafe fn allocate_more_slabs(&self, slab_index: usize) -> Result<(), ()> {
+
+        // Récupération de la référenc emutable 
         let inner = &mut *self.inner.get();
+        // récupération de la taille des blocs
         let slab_size = SLAB_SIZES[slab_index];
         
         // Calculer combien de slabs on peut créer
@@ -108,7 +124,8 @@ impl SlabAllocator {
         let current_alloc = inner.memory_start + inner.allocated_counts.iter().enumerate()
             .map(|(i, &count)| count * SLAB_SIZES[i])
             .sum::<usize>();
-            
+        
+        // Vérifie si il reste asser de place
         if current_alloc + required_memory > inner.memory_end {
             return Err(());  // Plus assez de mémoire
         }
@@ -117,22 +134,25 @@ impl SlabAllocator {
         for i in 0..slabs_to_create {
             // Assurer que l'adresse du bloc est correctement alignée
             let block_addr = current_alloc + i * slab_size;
+            // les allignement mémoires
             let alignment = mem::align_of::<SlabBlock>();
             let aligned_addr = (block_addr + alignment - 1) & !(alignment - 1);
-            
+            // Transformation de l'adresse aligné en "pointeur vers un bloc mémoire"
             let block_ptr = aligned_addr as *mut SlabBlock;
             
-            // Ajouter à la liste libre
+            // Ajouter à la liste libre  
             (*block_ptr).next = inner.free_lists[slab_index];
             inner.free_lists[slab_index] = block_ptr;
         }
-        
+        // Mise à jour du compteur
         inner.allocated_counts[slab_index] += slabs_to_create;
         Ok(())
     }
 }
 
-// Implémentation thread-safe de GlobalAlloc
+/// Implémentation thread-safe de GlobalAlloc
+/// On dit ici que SlabAllocator implémente le trait GlobalAlloc, ce qui permet de l’utiliser comme allocateur global pour tout le programme.
+/// ⚠️ unsafe car on manipule la mémoire manuellement via des pointeurs
 unsafe impl GlobalAlloc for SlabAllocator {
     unsafe fn alloc(&self, layout: Layout) -> *mut u8 {
         // Utiliser UnsafeCell.get() pour accéder de manière sûre aux données mutables
@@ -161,14 +181,14 @@ unsafe impl GlobalAlloc for SlabAllocator {
                 inner.free_lists[slab_index] = block;
                 return ptr::null_mut();
             }
-            
+            // Sinon, on retourne le pointeur vers la mémoire prête à être utilisé
             return ptr;
         }
         
         // Aucune taille de slab appropriée
         ptr::null_mut()
     }
-
+    /// Fonction appelée quand on veux désallouer uen zone mémoire
     unsafe fn dealloc(&self, ptr: *mut u8, layout: Layout) {
         // Utiliser UnsafeCell.get() pour accéder de manière sûre aux données mutables
         let inner = &mut *self.inner.get();
@@ -177,6 +197,7 @@ unsafe impl GlobalAlloc for SlabAllocator {
         if let Some(slab_index) = self.find_slab_index(&layout) {
             // Ajouter le bloc à la liste libre
             let block = ptr as *mut SlabBlock;
+            // ajout du bloc en tête de liste
             (*block).next = inner.free_lists[slab_index];
             inner.free_lists[slab_index] = block;
         }
@@ -186,31 +207,39 @@ unsafe impl GlobalAlloc for SlabAllocator {
 // Définir un allocateur global si la feature 'alloc' est activée
 #[cfg(feature = "alloc")]
 pub struct GlobalSlabAllocator {
+    // Encepsulation de l'allocateru standard en Unsafecell pour le rendre mutable
     inner: UnsafeCell<SlabAllocator>,
+    // un booléan(truc qui dit oui ou non) qui vérrifie si l'allocateur a déja été initialisé
     initialized: core::sync::atomic::AtomicBool,
 }
 
+/// une structure est thread-safe car `UnsafeCell` n'est pas Sync par défaut
 #[cfg(feature = "alloc")]
 unsafe impl Sync for GlobalSlabAllocator {}
 
 #[cfg(feature = "alloc")]
 impl GlobalSlabAllocator {
+    /// Fonction constante pour initialisé une instance vide à la compilation
     pub const fn new() -> Self {
         GlobalSlabAllocator {
+            /// Valeurinitiale = alllocateur vide ( adresse 0, taill e 0)
             inner: UnsafeCell::new(SlabAllocator::new(0, 0)),
             initialized: core::sync::atomic::AtomicBool::new(false),
         }
     }
     
+    /// initialisation de l'allocateur avec une plage mémoire donnée
     pub fn init(&self, start: usize, size: usize) {
         use core::sync::atomic::Ordering;
         
+        /// si pas encore initialisé
         if !self.initialized.load(Ordering::Acquire) {
             unsafe {
+                // récupère l'accès mutable à l'allocateur
                 let allocator = &mut *self.inner.get();
-                *allocator = SlabAllocator::new(start, size);
-                allocator.init();
-                self.initialized.store(true, Ordering::Release);
+                *allocator = SlabAllocator::new(start, size); // crée un nouvelle allocateur
+                allocator.init(); // initialise les structures internes
+                self.initialized.store(true, Ordering::Release); // signale que c'est pret
             }
         }
     }
@@ -220,11 +249,11 @@ impl GlobalSlabAllocator {
 unsafe impl GlobalAlloc for GlobalSlabAllocator {
     unsafe fn alloc(&self, layout: Layout) -> *mut u8 {
         use core::sync::atomic::Ordering;
-        
+        // Si l'allocateur n'est pas initialisé , on fait rien
         if !self.initialized.load(Ordering::Acquire) {
             return ptr::null_mut();
         }
-        
+        // laisse l'allocation à l'allocateur interne
         (*self.inner.get()).alloc(layout)
     }
     
@@ -238,9 +267,9 @@ unsafe impl GlobalAlloc for GlobalSlabAllocator {
 }
 
 
-// Initialisation de l'allocateur global avec une région de mémoire
+// Initialisation de l'allocateur global avec une région de mémoire simulé
 #[cfg(feature = "alloc")]
-#[test_case]
+#[test_case] // utilisé dans des environnement kernel ou systeme embarqué pour dire a cargo test d'exécuté le test unitaire
 fn init_global_alloc_for_tests() {
     static mut TEST_MEMORY: [u8; 1024 * 1024] = [0; 1024 * 1024];
     unsafe {
@@ -255,11 +284,11 @@ mod tests {
     use super::*;
     use core::alloc::Layout;
 
-    // Une Structure pour tester l'allocation
+    // Une Structure pour tester l'allocation complexe
     struct TestStruct {
-        a: u32,
-        b: u64,
-        c: [u8; 32],
+        a: u32,   // grosse structure
+        b: u64,   // alignement différents, peut forcer l'alignement global à 8
+        c: [u8; 32],   // tableau interne, ça augmente sa taille
     }
 
     #[test]
