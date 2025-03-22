@@ -147,6 +147,7 @@ Les tests utilisent `unsafe` comme dans le vrai code, mais sont bien encadrés.
 
 
 Les copier coller les resultats des test dans le fichier  test_et_warning il y a des warning mais c'est normal en no_std
+Et oui j'ai viré le main.rs via le cargo.toml j'ai ciblé mon fichier lib.rs pour les exécution et être le coeur du projet
 
 
 ## Tests d'intégration (`allocator_test.rs`)
@@ -181,3 +182,5 @@ Pour faire mon code j'ai utilisés les sources suivant pour apprendre, comprendr
 - https://github.com/thibault-reigner/userland_slab/blob/master/src/main.c  (avec https://www.codeconvert.ai/c-to-rust-converter pour comprendre comment le tien est fait)
 - https://www.kernel.org/doc/gorman/html/understand/understand011.html
 - chatgpt, claude, blackblox, rust-analyzer, youtube
+
+Prochaine etape, le kernel en fAT32 a coder puis implémentation de l'allocateur
