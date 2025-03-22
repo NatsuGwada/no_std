@@ -24,7 +24,6 @@ struct SlabBlock {
 }
 
 
-
 /// Notre allocateur de type Slab
 pub struct SlabAllocator {
     /// Utilisation d'UnsafeCell pour permettre une mutabilité intérieure
@@ -52,6 +51,8 @@ impl SlabAllocator {
     /// # Safety
     /// 
     /// La région de mémoire fournie doit être valide et non utilisée par d'autres parties du programme.
+    /// L'appelant doit garantir que la mémoire spécifiée par `start` et `size`
+    /// est valide, libre, et ne sera pas utilisée ailleurs dans le programme. 
     /// une constante car elle va etre evaluer a la compilation pour les test et comme c'est du no_std donc il y a des initialisation a la compilation
     pub const fn new(start: usize, size: usize) -> Self {
         SlabAllocator {
@@ -68,6 +69,8 @@ impl SlabAllocator {
     }
     
     /// Initialise les listes de blocs libres
+    /// 
+    /// /// # Safety
     /// unsafe va modifier l'interieur de UnsafeCell
     /// &self lis les données de la structure sans les modifiers, en gros de la lecture seule mais avec unsafeCell tu passes en lecture écriture donc tu peux modifier
     pub unsafe fn init(&self) {
@@ -83,6 +86,8 @@ impl SlabAllocator {
     }
     
     /// Trouve l'index de la taille de slab appropriée , en gros ça choisi quelle taile de bloc conviens a la demande d'allocation doonée 
+    ///
+    /// # Safety
     /// on reviens a l'exemple d'en haut 20 octer tu veux? ok tien voila 32 octer de dispo pour toi
     unsafe fn find_slab_index(&self, layout: &Layout) -> Option<usize> {
         // let inner = &*self.inner.get();
@@ -100,7 +105,7 @@ impl SlabAllocator {
         None // Aucune taille de slab appropriée, normalement il y a que une taille trop grosse par rapport a 128 qui ne passe pas
     }
     
-    /// Cette fonction est unsafe car elle manipule directement des pointeurs
+    /// Cette fonction est unsafe car elle manipule directement des pointeurs pour alouer plus de blocs libres pour un slab donnée
     /// et accède à la mémoire sans vérification.
     ///
     /// # Safety
@@ -151,6 +156,7 @@ impl SlabAllocator {
 }
 
 /// Implémentation thread-safe de GlobalAlloc
+/// # Safety
 /// On dit ici que SlabAllocator implémente le trait GlobalAlloc, ce qui permet de l’utiliser comme allocateur global pour tout le programme.
 /// ⚠️ unsafe car on manipule la mémoire manuellement via des pointeurs
 unsafe impl GlobalAlloc for SlabAllocator {
