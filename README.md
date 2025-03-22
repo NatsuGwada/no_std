@@ -142,4 +142,4 @@ J’ai testé :
 Les tests utilisent `unsafe` comme dans le vrai code, mais sont bien encadrés.
 
 
-Les copier coller les resultats des test dans le fichier  ... il y a des warning mais c'est normal en no_std
+Les copier coller les resultats des test dans le fichier  test_et_warning il y a des warning mais c'est normal en no_std
