@@ -1,4 +1,5 @@
-#![no_std]  /// Pas d'utilisation de la bibliothèque standard
+#![no_std]  
+///! Pas d'utilisation de la bibliothèque standard
 
 
 
@@ -70,7 +71,9 @@ impl SlabAllocator {
     
     /// Initialise les listes de blocs libres
     /// 
-    /// /// # Safety
+    /// # Safety
+    /// 
+    /// Cette fonction est unsafe car elle modifie la mémoire interne
     /// unsafe va modifier l'interieur de UnsafeCell
     /// &self lis les données de la structure sans les modifiers, en gros de la lecture seule mais avec unsafeCell tu passes en lecture écriture donc tu peux modifier
     pub unsafe fn init(&self) {
