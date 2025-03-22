@@ -156,3 +156,28 @@ Ce fichier est un test d’intégration.
 Il permet de tester l’allocateur comme s’il était utilisé dans une autre crate, par exemple un noyau ou une lib FAT32.
 Je voulais valider que les méthodes publiques (alloc, dealloc) fonctionnent indépendamment du code interne 
 Et comme on va faire un kernel en FAT32, ça tombe bien.
+
+
+## Vérifications qualité
+
+j’ai effectué les vérifications suivantes :
+
+- `cargo check` : aucune erreur de compilation
+- `cargo fmt` : formatage automatique appliqué
+- `cargo clippy` : aucun warning important
+-  `cargo doc` : documentation générée avec les sections `# Safety` visibles
+- `cargo test` : tous les tests passent, y compris tests d’intégration (déja mentionné un peu plus haut)
+
+Pour faire mon code j'ai utilisés les sources suivant pour apprendre, comprendre et coder & et debug: 
+- https://web.archive.org/web/20250227145420/https://doc.rust-lang.org/stable/std/alloc/trait.GlobalAlloc.html
+- https://os.phil-opp.com/testing/
+- https://www.lurklurk.org/effective-rust/no-std.html
+- https://siliconislandblog.wordpress.com/2022/04/24/writing-a-no_std-compatible-crate-in-rust/
+- https://blog.dbrgn.ch/2019/12/24/testing-for-no-std-compatibility/
+- https://web.mit.edu/rust-lang_v1.25/arch/amd64_ubuntu1404/share/doc/rust/html/book/first-edition/conditional-compilation.html
+- https://medium.com/better-programming/compile-time-feature-flags-in-rust-why-how-when-129aada7d1b3
+- https://jimskapt.github.io/rust-book-fr/ch03-02-data-types.html
+- https://en.wikipedia.org/wiki/Slab_allocation
+- https://github.com/thibault-reigner/userland_slab/blob/master/src/main.c  (avec https://www.codeconvert.ai/c-to-rust-converter pour comprendre comment le tien est fait)
+- https://www.kernel.org/doc/gorman/html/understand/understand011.html
+- chatgpt, claude, blackblox, rust-analyzer, youtube
