@@ -1,0 +1,1 @@
+searchState.loadedDescShard("slab_allocator", 0, "Notre allocateur de type Slab\nFonction appelée quand on veux désallouer uen zone …\nReturns the argument unchanged.\nInitialise les listes de blocs libres\nCalls <code>U::from(self)</code>.\nCrée un nouvel allocateur")
