@@ -169,7 +169,7 @@ j’ai effectué les vérifications suivantes :
 -  `cargo doc` : documentation générée avec les sections `# Safety` visibles
 - `cargo test` : tous les tests passent, y compris tests d’intégration (déja mentionné un peu plus haut)
 
-Pour faire mon code j'ai utilisés les sources suivant pour apprendre, comprendre et coder & et debug: 
+Pour faire mon code j'ai utilisés, récupérer , été assisté, tester & lu les sources suivant pour apprendre, comprendre et coder & et debug: 
 - https://web.archive.org/web/20250227145420/https://doc.rust-lang.org/stable/std/alloc/trait.GlobalAlloc.html
 - https://os.phil-opp.com/testing/
 - https://www.lurklurk.org/effective-rust/no-std.html
