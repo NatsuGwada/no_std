@@ -87,5 +87,59 @@ Le Slab_Allocator est compatible avec un environnement no_std,doncsans accès à
 ça met un context bas niveau ( cool pour du embarqué ou des noyaux car c'est ce qui est demander)
 un noyaux(kernel) n'a pas accès a la bibliothèque standard, donc on va utilise le module "code::" aulieu de "std::)
 
+--------------------------------------------------------------------------------------------------------
+## Design de l’allocateur
+
+J’ai implémenté un allocateur de type Slab, qui fonctionne en créant des blocs (slabs) de taille fixe.  
+4 tailles choisi : 16, 32, 64 et 128 octets.  
+Chaque taille a sa propre liste chaînée de blocs libres.
+
+Quand on veut allouer de la mémoire :
+- on regarde la taille demandée
+- on choisit la taille de bloc qui correspond (ex: 20 octets → bloc de 32)
+- on prend un bloc libre dans la liste
+- si la liste est vide, on en crée 10 nouveaux
+
+Quand on désalloue :
+- on remet le bloc dans la liste des libres
+
+Ce design est rapide, évite la fragmentation et marche très bien pour FAT32.
+
+## Schéma visuel mémoire
+
+Voici à quoi ressemble la mémoire allouée par blocs (liste chaînée) :
+
+[ Bloc libre 1 ] → [ Bloc libre 2 ] → [ Bloc libre 3 ] → null
+
+Chaque bloc contient un pointeur vers le suivant (`next: *mut SlabBlock`)
+
+Quand on alloue un bloc, on prend celui en tête et on avance la liste.
+Quand on libère, on met le bloc au début de la liste.
+
+## Sécurité : `unsafe` expliqué
+
+Rust interdit normalement de manipuler la mémoire brute.  
+Mais comme on est en `no_std`, on utilise des `unsafe` pour accéder à des pointeurs, ou écrire dans la mémoire.
+
+Chaque fonction `unsafe` est documentée avec `/// # Safety` dans le code, comme demandé.  
+On garantit :
+- qu’on accède à une mémoire allouée et alignée
+- qu’il n’y a pas d’accès concurrent (pas de multithread, car accéder à la mémoire en meme temps ça peut faire bogué). 
+- qu’on évite les doublons de libération (`double free`)
+
+C'est quoi un thread? Bin c'est un petit sous programme qui s'exécute en parallèle avec d'autre. par exemple téléchager un fichier , l'action se fait par un thread. c'est un truc qui fait une tâche ou une action.
+Ensuite...
+
+## Tests réalisés
+
+Les tests sont dans le fichier `lib.rs` dans le module `#[cfg(test)]`.
+
+J’ai testé :
+- l’allocation d’un `u32` et l’écriture dedans ( allocation simple et minimal, pour valider le fonctionnement)
+- des allocations avec différentes tailles (`u8`, `u32`, `TestStruct`, etc., pour s'assurer que find_slab_index() fonctionne pour l'allocation adaptative)
+- la réutilisation d’un bloc après désallocation (test important ! pour savoir si ça réutilise proprement la mémoire)
+
+Les tests utilisent `unsafe` comme dans le vrai code, mais sont bien encadrés.
 
 
+Les copier coller les resultats des test dans le fichier  ... il y a des warning mais c'est normal en no_std
