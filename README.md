@@ -81,7 +81,7 @@ Pas de Buddy Allocator: pourquoi? = L'allocation mémoire est divisé en bloc de
 Meilleur choix : Slab Allocator 
 pourquoi ? = Il est concu pour les structures de tailles fixe (prépartion de bloc adapté possible)
              Il évite la fragmentation ( Slab stock que un type d'objet)
-             Il est rapide (pas de recherche de bloc comme fee list, il prend un bloc disponible)
+             Il est rapide (pas de recherche de bloc comme free list, il prend un bloc disponible)
 
 
 
@@ -183,4 +183,4 @@ Pour faire mon code j'ai utilisés, récupérer , été assisté, tester & lu le
 - https://www.kernel.org/doc/gorman/html/understand/understand011.html
 - chatgpt, claude, blackblox, rust-analyzer, youtube
 
-Prochaine etape, le kernel en fAT32 a coder puis implémentation de l'allocateur
+Prochaine etape, le kernel en FAT32 a coder puis implémentation de l'allocateur
